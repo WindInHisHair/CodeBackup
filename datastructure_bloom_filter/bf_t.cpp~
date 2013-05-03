@@ -1,0 +1,113 @@
+//Author: Baiyu Xi
+//Date: Dec 2011
+//Descriptions: The Forth homework for the Advanced Data Structure
+//ID: 1094
+#include "bf_t.h"
+#include <stdlib.h>
+#include <time.h>
+
+// the interface fot the homework
+bf_t * create_bf()
+{
+	return new bf_t();
+}
+
+void insert_bf(bf_t * b, char *s)
+{
+	b ->insert(s);
+}
+
+int is_element(bf_t * b, char *q)
+{
+	return b ->find(q);
+}
+
+//the implementation for the class bf_t
+bf_t::bf_t()
+{
+	table = new byte*[8];
+	for( int i =0;i < 8;i ++)
+	{
+		table[i] = new byte[SIZE];
+		for(int t=0; t<SIZE;t ++)
+			table[i][t] = 0;
+	}
+		
+	param = new h_param[8];
+
+	//srand(time(NULL));
+	for(int i = 0;i < 8;i ++)
+	{
+		for(int j = 0;j < 8;j ++)
+			param[i].a[j] = rand()%MAXP;
+		param[i].b = rand()%MAXP;
+	}
+}
+
+bf_t::~bf_t()
+{
+	for(int i = 0;i < 8;i ++)
+	{
+		delete table[i];
+	}
+	delete [] table;
+	delete [] param;
+}
+
+int bf_t::find(char *q)
+{
+	int isElem = 1;
+	for(int i = 0;i < 8;i ++)
+	{
+		long result = h_fun(q, param[i].a, param[i].b);
+		//long index = result /8;
+		//long pos = result %8;
+		// 
+		//if(table[i][index]&(1<<pos) == 0)
+		//{
+		//	isElem = 0;
+		//	break;
+		//}
+		if(table[i][result] == 0)
+		{
+			isElem = 0;
+			break;
+		}
+	}
+	return isElem;
+}
+
+void bf_t::insert(char *s)
+{
+
+	for(int i =0;i < 8;i ++)
+	{
+	
+	       long key = h_fun(s, param[i].a, param[i].b);
+#ifdef __DEBUG__	
+	       printf("\ti: %d; key: %d\n", i, key);
+	       fflush(stdout);
+#endif
+	       //long index = key/8 ;
+	       //long pos = key%8;
+	       //table[i][index] = table[i][index]|(1 <<pos);
+
+	       table[i][key] = 1;
+	}
+
+}
+long bf_t::h_fun(char *q, int* a, int b)
+{
+	char *ptr = q;
+	long sum = b;
+	long i =0; 
+	while(*ptr != '\0')
+	{
+		long tmp = (unsigned char) ptr[0]; 
+		sum += (a[i]* tmp);
+		i ++;
+		ptr++;
+	}
+
+	sum = (sum%MAXP)%(2000000);
+}
