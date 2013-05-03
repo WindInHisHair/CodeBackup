@@ -1,0 +1,19 @@
+Implement a structure that maintains a linear order, based on chapter 6.5 of
+the book.
+The structure must support the following operations
+- o t * create order() creates an empty linear ordered set
+- void insert before(o t *ord, key t a, key t b) inserts the key a immediately
+before key b in the ordered set.
+- void insert after(o t *ord, key t a, key t b) inserts the key a immediately
+after key b in the ordered set.
+- void insert top(o t *ord, key t a) inserts the key a as largest element in
+  the
+  ordered set
+  - void insert bottom(o t *ord, key t a) inserts the key a as smallest element
+    in
+    the ordered set
+    - void delete o(o t *ord, key t a) deletes the key a from the ordered set
+    - int is before(o t *ord, key t a, key t b) returns 1 if key a occurs
+      before key
+      b in the ordered set, 0 else.
+      Here key t is a number type that allows comparisons
