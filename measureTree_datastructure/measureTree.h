@@ -1,6 +1,3 @@
-//Date: Oct 2011
-//Author: Baiyu Xi
-//ID:1094
 //
 //
 //

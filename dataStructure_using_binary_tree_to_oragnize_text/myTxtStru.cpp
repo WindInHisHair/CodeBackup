@@ -1,6 +1,3 @@
-//Author: Baiyu Xi
-//ID:  1094
-//Date: Oct 2011
 
 //Tips: my implementation is slightly different from the Prof. Brass's book:
 //in my tree, the if key value <= a node key, then turn left, otherwise turn right.

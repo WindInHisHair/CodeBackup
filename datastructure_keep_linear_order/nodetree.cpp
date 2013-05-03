@@ -1,140 +1,53 @@
-//
-//
-//
-//tips: using "g++ *.cpp" to compile 
-
 #include "nodetree.h"
-
-ivlNode * currentIvlNode = NULL;
-int sz_ivlNode;
-ivlNode * freeIvlNode = NULL;
-
-void interval_tree::printTree()
+node * key_tree::getNode()
 {
-	printf("the total number is %d\n", num);
-	//printf("the union is %d \n", query_length(this));
-	ivlNode **	stack = new ivlNode*[num];
-	ivlNode ** astack = new ivlNode* [num];
-
-	int sindex = -1;
-	int aindex = -1;
-
-	ivlNode * pnode = root;
-
-	if(root == NULL)
-		printf("empty tree\n");
-	else
-		printf("%d \n", pnode ->key);
-
-	sindex ++;
-	stack[sindex] = pnode;
-
-
-	//node * tmp = pnode ->left;
-	while(sindex > -1)
+	node *tmp;
+	if(currentNodeHead == NULL || sz_node == 0)
 	{
+		currentNodeHead =(node*) malloc(BLOCKSIZE_NODE * sizeof(node));
+		nodeHead = currentNodeHead;
+		sz_node = BLOCKSIZE_NODE;
 
-		while(sindex >= 0)
-		{
-			ivlNode * upper = stack[sindex];
-			sindex --;
-			if(upper ->left != NULL && upper ->left ->left != NULL)
-				printf("%d ", upper->left ->key);
-			else
-				printf("Lf ");
-			if(upper ->right != NULL && upper ->right ->left != NULL)
-				printf("%d ", upper ->right ->key);
-			else
-				printf("lf ");
-			if( upper ->left !=NULL && upper ->left ->left != NULL)
-			{
-				aindex ++;
-				astack[aindex] = upper ->left;
-			}
-			if(upper ->right != NULL && upper ->right ->left != NULL)
-			{
-				aindex ++;
-				astack[aindex] = upper ->right;
-
-			}
-		}
-		printf("\n");
-
-
-		while(aindex >= 0)
-		{
-			ivlNode * tmp = astack[aindex];
-			aindex --;
-
-			sindex ++;
-			stack[sindex] = tmp;
-
-		}
-	}//end of while
-
-	printf("\n");
-}
-ivlNode * getIvlNode()
-{
-	ivlNode *tmp;
-	if(freeIvlNode != NULL)
-	{
-		tmp = freeIvlNode;
-		freeIvlNode = freeIvlNode->next;
 	}
-	else
-	{
-		if(currentIvlNode == NULL || sz_ivlNode == 0)
-		{
-			currentIvlNode =(ivlNode*) malloc(BLOCKSIZE_IVL_NODE * sizeof(ivlNode));
-			sz_ivlNode = BLOCKSIZE_IVL_NODE;
-					
-		}
-		tmp = currentIvlNode ++;
-		sz_ivlNode -= 1;
-	}
+		tmp = currentNodeHead ++;
+		sz_node -= 1;
+	tmp ->up = NULL;
+	tmp ->left = NULL;
+	tmp ->right = NULL;
+	tmp ->next = NULL;
+	tmp ->lnext = tmp ->lprev = NULL;
+	tmp ->height = 0;
 	return tmp;
 }
 
-void returnIvlNode(ivlNode *n)
+void key_tree::returnNode(node *n)
 {
-	n ->next = freeIvlNode;
-	freeIvlNode = n;
+	n ->next = freeNode;
+	freeNode = n;
 }
 
-interval_tree::interval_tree()
+key_tree::key_tree()
 {
 	num = 0;
-
-	root = new ivlNode;
+	root = new node;
 	root ->left = NULL;
-	root ->height = 0;
 	root ->right = NULL;
+	root ->up = NULL;
+	root ->lprev = root ->lnext = 0;
+	root ->next = 0;
+	currentNodeHead = NULL;
+	freeNode = NULL;
+	nodeHead = NULL;
+	sz_node = 0;
 }
-interval_tree::~interval_tree()
+key_tree::~key_tree()
 {
+
+	if(nodeHead != NULL)
+		free(nodeHead);
 }
 
-int interval_tree::max()
-{
-	ivlNode * n = root;
-	while( n ->right != NULL)
-		n = n ->right;
-	return n ->key;
-	
-}
-
-int interval_tree::min()
-{
-	ivlNode * n = root;
-	while( n->left != NULL)
-		n = n ->left;
-
-	return n ->key;
-}
-
-
-ivlNode * interval_tree::find(int index)
+node * key_tree::find(long index)
 {
 	if( root ->left == NULL)
 		return NULL;
@@ -144,7 +57,7 @@ ivlNode * interval_tree::find(int index)
 			return root ->left;
 		else
 		{
-			ivlNode *n = root;
+			node *n = root;
 			while(n ->right != NULL)
 			{
 				if(index < n->key)
@@ -161,17 +74,11 @@ ivlNode * interval_tree::find(int index)
 		}//end of else
 	}
 }
-void interval_tree::add(int index)
+void key_tree::add(long index, node* newNode)
 {
-	ivlNode * pnode;
-	ivlNode ** stack = new ivlNode* [num];
+	node * pnode;
+	node ** stack = new node* [root ->height + 2];
 	int sindex = -1;
-	ivlNode * newNode = getIvlNode();
-	newNode ->right = NULL;
-	newNode ->left = NULL;
-	newNode ->height = 0;
-	newNode ->key = index;
-	
 
 	if(root ->left == NULL)
 	{
@@ -186,6 +93,7 @@ void interval_tree::add(int index)
 		while(pnode ->right != NULL)
 		{
 			sindex ++;
+			//pnode ->height ++;
 			stack[sindex] = pnode;
 			if(index < pnode ->key)
 				pnode = pnode ->left;
@@ -195,16 +103,16 @@ void interval_tree::add(int index)
 
 		if(index != pnode ->key)
 		{
-			ivlNode *oldLeaf, * newLeaf;
-			oldLeaf = getIvlNode();
+			node *oldLeaf, * newLeaf;
+			oldLeaf = getNode();
 			oldLeaf ->left = pnode ->left;
 			oldLeaf ->key = pnode ->key;
 			oldLeaf ->height = 0;
 			oldLeaf -> right = NULL;
 
-			newLeaf = getIvlNode();
+			newLeaf = getNode();
 			newLeaf ->left = newNode;
-			newLeaf ->key =index;
+			newLeaf ->key = index;
 			newLeaf ->right = NULL;
 			newLeaf ->height = 0;
 			if(pnode ->key < index)
@@ -221,35 +129,32 @@ void interval_tree::add(int index)
 			pnode ->height = 1;
 		}//end of else
 
-		//rebalacne
 		reBalance(stack, sindex);
 		
 		delete stack;
 	}//end of else
 
 	num ++;
-
 }
 
-ivlNode * interval_tree::remove(int index)
+node * key_tree::remove(long index)
 {
-	
+	num --;
+	int sindex = -1;
+	node ** stack = new node*[root ->height + 2];
+	node *delNode;
+
+
 	if(root == NULL)
 		return NULL;
-	int sindex = -1;
-	ivlNode ** stack = new ivlNode*[num];
-	ivlNode *delNode;
-
-
 	if(root ->left == NULL)
 		return NULL;
 	if(root ->right == NULL)
 	{
 		if(root ->key == index)
 		{
-			ivlNode *tmp = root -> left;
+			node *tmp = root -> left;
 			root ->left = NULL;
-			num --;
 			return tmp;
 		}
 		else
@@ -257,8 +162,8 @@ ivlNode * interval_tree::remove(int index)
 	}
 	else
 	{
-		ivlNode *pnode = root;
-		ivlNode *upper, *other;
+		node *pnode = root;
+		node *upper, *other;
 		while(pnode -> right != NULL)
 		{
 			sindex ++;
@@ -286,31 +191,28 @@ ivlNode * interval_tree::remove(int index)
 			upper ->right = other ->right;
 			upper ->height = other ->height;
 			delNode = pnode -> left;
-			returnIvlNode(pnode);
-			returnIvlNode(other);
-			sindex --;
+			returnNode(pnode);
+			returnNode(other);
+			 sindex --;
 
 		}
 		//rebalance
 		reBalance(stack, sindex);
 	}//end of else
 	delete stack;
-
-	num --;
 	return delNode;
 	
 }
 
 
-void interval_tree::reBalance(ivlNode ** stack, int sindex)
+void key_tree::reBalance(node ** stack, int sindex)
 {
-
 	int finished = 0;
 
 	while(sindex > -1 && !finished)
 	{
 		int tmpHeight, oldHeight;
-		ivlNode * pnode = stack[sindex];
+		node * pnode = stack[sindex];
 		sindex --;
 
 		oldHeight = pnode ->height;
@@ -352,7 +254,7 @@ void interval_tree::reBalance(ivlNode ** stack, int sindex)
 		}
 		else 
 		{
-			if(pnode->left->height > pnode->right->height +1)
+			if(pnode->left->height > pnode->right->height )
 				pnode->height= pnode ->left ->height +1;
 			else
 				pnode ->height= pnode->right ->height +1;
@@ -361,10 +263,10 @@ void interval_tree::reBalance(ivlNode ** stack, int sindex)
 			finished = 1;
 	}
 }
-void interval_tree::left_rotate(ivlNode *n)
+void key_tree::left_rotate(node *n)
 {
-	ivlNode * tmp = n ->left;
-	int tmpKey = n ->key;
+	node * tmp = n ->left;
+	long tmpKey = n ->key;
 
 	n ->left = n ->right;
 	n ->key = n ->right ->key;
@@ -372,13 +274,11 @@ void interval_tree::left_rotate(ivlNode *n)
 	n ->left ->right = n ->left ->left;
 	n ->left ->left = tmp;
 	n ->left ->key = tmpKey;
-
-
 }
-void interval_tree::right_rotate(ivlNode * n)
+void key_tree::right_rotate(node * n)
 {
-	ivlNode * tmp = n ->right;
-	int tmpKey = n ->key;
+	node * tmp = n ->right;
+	long tmpKey = n ->key;
 	n ->right = n ->left;
 	n ->key = n ->left ->key;
 	n ->left = n ->right ->left;
@@ -386,9 +286,4 @@ void interval_tree::right_rotate(ivlNode * n)
 	n ->right ->right = tmp;
 	n ->right ->key = tmpKey;
 }
-void interval_tree::clear()
-{
-		num = 0;
-		root ->left = NULL;
-		root-> right =NULL;
-}
+

@@ -1,6 +1,3 @@
-//Author: Baiyu Xi
-//ID:  1094
-//Date: Oct 2011
 //Descriptions: using g++ to compile  or use the "make" command, the Makefile
 #ifndef  MY_TEXT_STRUCTURE__
 #define  MY_TEXT_STRUCTURE__
