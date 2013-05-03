@@ -1,0 +1,40 @@
+Write a program that takes as input:
+    - two files, vacation_destinations.csv and vacation_flights.csv
+      (format described below)
+    - a starting city
+    - a set of attractions
+
+and returns a single itinerary that visits at least one of every attraction 
+in the set, then returns to the starting city.  Multiple attractions in one
+city count.  Attractions in the starting city do not count (no
+staycations allowed!).  You may visit the same city multiple times if needed.
+
+If multiple valid itineraries exist, use lowest total cost to determine which
+is selected for display.
+
+The file formats are as per standard comma-separated value files consisting
+of multiple lines formatted as follows:
+    - vacation_destinations.csv: CITY,attraction1,attraction2,...
+    - vacation_flights.csv: FROM_CITY,TO_CITY,outbound_cost,inbound_cost
+
+A,B,3,5 means that there is a flight from A to B for $3, and a flight from B
+to A for $5.  Example files are included.  Expect your program to be run with 
+both the files provided and more complicated maps.
+
+Your program should expect vacation_destinations.csv and vacation_flights.csv
+to be in the same directory, and take as arguments the starting city and
+required attractions, e.g.
+
+        % myprog.py SFO themepark landmark beach
+
+You can expect the input CSV files to be well-formed, and the graph of
+cities to be reasonably connected, i.e. there is always a path from any
+given city to any other given city.
+
+Output can be in any form you wish, but it should show the relevant
+attractions visited in each city and the total cost.  It should also provide
+some reasonable measure of progress while it is running (millions
+of lines of output would not be acceptable, for example).
+
+Bear in mind that this program should be usable by real people in the real
+world; if you decide to make some compromises, explain why.

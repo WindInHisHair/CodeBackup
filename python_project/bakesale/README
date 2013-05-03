@@ -1,0 +1,20 @@
+A school has had a month-long bake sale and the number of sales has been 
+tabulated according to what type of pastry was sold, what teacher was 
+supervising while they were selling, and on what day they were sold (multiple 
+teachers may supervise in a given day). 
+
+This data is all in one 3D numpy array, where the first axis refers to the 
+pastry type, the second axis refers to the teacher, the third axis refers to 
+the day, and the value in the array is an integer saying how many were 
+sold for those parameters. 
+
+In another (1D) array is the per-unit profit from selling each type of pastry.
+
+Compute 1) the total profits from the entire bake sale, and 2) the total 
+profits under each teacher’s supervision. 
+
+Aside from accessing the data, use of numpy features is not required.  If you
+choose to use numpy, assume that your code will be evaluated using version
+1.6.1.
+
+Stub code has been provided in bakesale.py.
